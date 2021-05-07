@@ -221,7 +221,6 @@
 </template>
 
 <script>
-const { wbObj } = require("./makeData");
 
 export default {
   name: "App",
