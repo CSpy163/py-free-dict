@@ -2,20 +2,34 @@
   "name": "free-dict",
   "version": "0.1.0",
   "private": true,
+  "author": "CSpy",
+  "description": "Free!",
+  "main": "index.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron-forge start",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "up": "electron ."
   },
   "dependencies": {
-    "ant-design-vue": "^1.7.4",
     "core-js": "^3.6.5",
+    "electron-squirrel-startup": "^1.0.0",
+    "element-ui": "^2.15.1",
     "is-electron": "^2.2.0",
     "mime": "^2.5.2",
-    "vue": "^2.6.11"
+    "moment": "^2.29.1",
+    "vue": "^2.6.11",
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "^4.5.12",
@@ -46,5 +60,31 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "free_dict"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
 }
