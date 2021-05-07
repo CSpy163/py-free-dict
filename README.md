@@ -1,24 +1,11 @@
 # free-dict
 
-## Project setup
-```
+```bash
+# 安装依赖
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
+# 同时打开两个终端
 npm run serve
+npm run up
+# 打包 Macos
+npm run make
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
