@@ -11,11 +11,16 @@ const { ipcMain } = require('electron')
 
 let win = null
 
+// moment 时间组件设置时区
 moment.locale('zh-cn')
 
+// 设置可被允许的文件类型（mime）
 const allowFileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']
 
-
+/*
+分割 Excel 定位标识。
+比方：A1 则返回 {'row': 'A', 'col': 1}
+*/
 function splitCell(cell) {
   const cellPattern = /^(?<col>[A-Z]+)(?<row>\d+)$/
   return cell.match(cellPattern) ? {
@@ -24,6 +29,7 @@ function splitCell(cell) {
   } : {}
 }
 
+// 判断传入的数组是否全为空
 function pureEmpty(col) {
   return col.find(c => c != undefined) == null || col.find(c => c != undefined) == undefined
 }
