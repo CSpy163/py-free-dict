@@ -15,6 +15,7 @@
     "up": "electron ."
   },
   "dependencies": {
+    "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.6.5",
     "electron-squirrel-startup": "^1.0.0",
     "element-ui": "^2.15.1",

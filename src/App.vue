@@ -184,9 +184,7 @@
         </li>
       </ul>
       <template slot="footer">
-        <el-button type="primary" @click="showTemplate"
-          >查看标准列</el-button
-        >
+        <el-button type="primary" @click="showTemplate">查看标准列</el-button>
         <el-button type="primary" @click="compareDialog = false"
           >关闭</el-button
         >
@@ -217,10 +215,205 @@
         >
       </template>
     </el-dialog>
+
+    <el-dialog :title="sqlDialogTitle" :visible.sync="sqlDialog" width="80%">
+      <el-row>
+        <el-col :span="4">选择标准列</el-col>
+        <el-col :span="4"
+          ><el-select
+            v-model="sql.temIndex"
+            filterable
+            placeholder="选择标准列"
+          >
+            <el-option
+              v-for="bigCol in temColLength"
+              :label="'列' + bigCol"
+              :key="bigCol"
+              :value="bigCol"
+            ></el-option> </el-select
+        ></el-col>
+        <el-col :span="3">选择大列</el-col>
+        <el-col :span="5"
+          ><el-select v-model="sql.area" filterable placeholder="选择大列">
+            <el-option
+              v-for="bigCol in bigColNames"
+              :label="bigCol"
+              :key="bigCol"
+              :value="bigCol"
+            ></el-option> </el-select
+        ></el-col>
+        <el-col :span="3">选择列</el-col>
+        <el-col :span="5"
+          ><el-select v-model="sql.areaIndex" filterable placeholder="选择列">
+            <el-option
+              v-for="bigCol in bigColLength"
+              :label="'列' + bigCol"
+              :key="bigCol"
+              :value="bigCol"
+            ></el-option> </el-select
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">SQL 前缀</el-col>
+        <el-col :span="18"
+          ><el-input
+            clearable
+            v-model="sql.prefix"
+            placeholder="请输入 SQL 前缀"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">SQL 后缀</el-col>
+        <el-col :span="18"
+          ><el-input
+            clearable
+            v-model="sql.suffix"
+            placeholder="请输入 SQL 后缀"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">单匹配</el-col>
+        <el-col :span="6"
+          ><el-input
+            clearable
+            v-model="sql.singlePattern"
+            placeholder="元素模版（单）"
+          ></el-input
+        ></el-col>
+        <el-col :span="12"
+          ><el-input
+            clearable
+            v-model="sql.singleFullPattern"
+            placeholder="请输入单匹配模版"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">多匹配</el-col>
+        <el-col :span="6"
+          ><el-input
+            clearable
+            v-model="sql.multiPattern"
+            placeholder="元素模版（多）"
+          ></el-input
+        ></el-col>
+        <el-col :span="12"
+          ><el-input
+            clearable
+            v-model="sql.multiFullPattern"
+            placeholder="请输入多匹配模版"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">模拟数据</el-col>
+        <el-col :span="18"
+          ><el-input
+            clearable
+            v-model="sql.demoData"
+            placeholder="请输入模拟数据，“,” 分割"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">SQL 预览</el-col>
+        <el-col :span="18"
+          ><el-input type="textarea" disabled v-model="templateSQL"></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">完整 SQL 预览</el-col>
+        <el-col :span="18"
+          ><el-input type="textarea" disabled v-model="resultSQL"></el-input
+        ></el-col>
+      </el-row>
+      <template slot="footer">
+        <el-button type="primary" @click="templateSQLDialog = true"
+          >打开模版配置</el-button
+        >
+        <el-button type="success" @click="copyTo(resultSQL)"
+          >复制 SQL</el-button
+        >
+        <el-button type="primary" @click="sqlDialog = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog
+      title="SQL 模版配置"
+      :visible.sync="templateSQLDialog"
+      width="80%"
+    >
+      <el-row>
+        <el-col :span="6">SQL 前缀</el-col>
+        <el-col :span="18"
+          ><el-input
+            clearable
+            v-model="template.prefix"
+            placeholder="请输入 SQL 前缀"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">SQL 后缀</el-col>
+        <el-col :span="18"
+          ><el-input
+            clearable
+            v-model="template.suffix"
+            placeholder="请输入 SQL 后缀"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">单匹配</el-col>
+        <el-col :span="6"
+          ><el-input
+            clearable
+            v-model="template.singlePattern"
+            placeholder="元素模版（单）"
+          ></el-input
+        ></el-col>
+        <el-col :span="12"
+          ><el-input
+            clearable
+            v-model="template.singleFullPattern"
+            placeholder="请输入单匹配模版"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">多匹配</el-col>
+        <el-col :span="6"
+          ><el-input
+            clearable
+            v-model="template.multiPattern"
+            placeholder="元素模版（多）"
+          ></el-input
+        ></el-col>
+        <el-col :span="12"
+          ><el-input
+            clearable
+            v-model="template.multiFullPattern"
+            placeholder="请输入多匹配模版"
+          ></el-input
+        ></el-col>
+      </el-row>
+      <template slot="footer">
+        <el-button type="primary" @click="applyTemplate"
+          >应用模版配置</el-button
+        >
+        <el-button type="primary" @click="templateSQLDialog = false"
+          >关闭</el-button
+        >
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// const { wbObj } = require("./mock/mockData");
+import copy from "copy-to-clipboard";
 
 export default {
   name: "App",
@@ -270,14 +463,77 @@ export default {
       ],
       templateDialog: false,
       templateRows: [],
+      sqlDialog: false,
+      sql: {
+        prefix: "",
+        suffix: "",
+        singlePattern: "",
+        multiPattern: "",
+        singleFullPattern: "",
+        multiFullPattern: "",
+        demoData: "a,b,c,d,e",
+        area: "",
+        temIndex: "",
+        areaIndex: "",
+      },
+      sqlTemList: [],
+      resultSQL: "",
+      templateSQLDialog: false,
+
+      template: {
+        prefix: "",
+        suffix: "",
+        singlePattern: "'${item}'",
+        multiPattern: ",'${item}'",
+        singleFullPattern: "case ${singlePattern} then ${tem}",
+        multiFullPattern: "case in (${multiPatterns}) then ${tem}",
+      },
     };
   },
   computed: {
+    templateSQL() {
+      return this.getSQLTemplate(this.dt.length);
+    },
+    multiPatterns() {
+      if (this.dt.length > 1) {
+        let resultPattern = this.sql.singlePattern;
+        for (let i = 1; i < this.dt.length; i++) {
+          resultPattern += this.sql.multiPattern.replace(
+            "${item}",
+            "${item" + i + "}"
+          );
+        }
+        return resultPattern;
+      } else {
+        return "";
+      }
+    },
+    dt() {
+      return this.sql.demoData.split(",");
+    },
+    temColLength() {
+      return this.dict
+        ? this.wbObj[this.dict]["_template"].length != 0
+          ? this.wbObj[this.dict]["_template"][0]["cols"].length
+          : 0
+        : 0;
+    },
+    bigColLength() {
+      if (this.dict && this.sql.area && this.wbObj[this.dict][this.sql.area]) {
+        return this.wbObj[this.dict][this.sql.area].length != 0
+          ? this.wbObj[this.dict][this.sql.area][0]["cols"].length
+          : 0;
+      }
+      return 0;
+    },
     dictDialogTitle() {
       return `设置【${this.dict}】对比列`;
     },
     templateDialogTitle() {
       return `标准 【${this.dict}】Dict`;
+    },
+    sqlDialogTitle() {
+      return `导出 【${this.dict}】SQL`;
     },
   },
   mounted() {
@@ -291,6 +547,7 @@ export default {
       }
       this.sheets.splice(0);
       this.wbObj = wbObj;
+      // console.log(this.wbObj)
       this.dict = "";
 
       for (let key in this.wbObj) {
@@ -322,6 +579,73 @@ export default {
     });
   },
   methods: {
+    copyTo(obj) {
+      copy(obj);
+      this.$message({
+        message: "复制成功。",
+        type: "success",
+      });
+    },
+    // 将自定义的 sql 模版设置到 SQL 上
+    applyTemplate() {
+      this.sql.prefix = this.template.prefix;
+      this.sql.suffix = this.template.suffix;
+      this.sql.singlePattern = this.template.singlePattern;
+      this.sql.multiPattern = this.template.multiPattern;
+      this.sql.singleFullPattern = this.template.singleFullPattern;
+      this.sql.multiFullPattern = this.template.multiFullPattern;
+      this.templateSQLDialog = false;
+    },
+    // 初始化 SQL 导出面板
+    initSQLDialog() {
+      this.sql.prefix = "";
+      this.sql.suffix = "";
+      this.sql.singlePattern = "";
+      this.sql.multiPattern = "";
+      this.sql.singleFullPattern = "";
+      this.sql.multiFullPattern = "";
+      this.sql.demoData = "a,b,c,d,e";
+      this.sql.area = "";
+      this.sql.temIndex = "";
+      this.sql.areaIndex = "";
+    },
+    // 刷新 SQL
+    refreshSQL() {
+      this.resultSQL = this.sql.prefix;
+      this.wbObj[this.dict]["_template"].forEach((tObj) => {
+        let areaObjs = tObj["matches"][this.sql.area];
+        if (areaObjs) {
+          console.log(areaObjs)
+          let sqlTemplate = this.getSQLTemplate(areaObjs.length);
+          console.log(sqlTemplate)
+          for (let i = 0; i < areaObjs.length; i++) {
+            let r = `\${item${i == 0 ? "" : i}}`;
+            sqlTemplate = ` ${sqlTemplate
+              .replace(r, areaObjs[i]["cols"][this.sql.areaIndex - 1])
+              .replace("${tem}", tObj["cols"][this.sql.temIndex - 1])} `;
+          }
+          this.resultSQL += sqlTemplate;
+        }
+      });
+      this.resultSQL += this.sql.suffix;
+    },
+    // 获取 SQL 模版
+    getSQLTemplate(length) {
+      switch (length) {
+        case 0:
+          return "";
+        case 1:
+          return `${this.sql.singleFullPattern}`.replace(
+            "${singlePattern}",
+            this.sql.singlePattern
+          );
+        default:
+          return `${this.sql.multiFullPattern}`.replace(
+            "${multiPatterns}",
+            this.multiPatterns
+          );
+      }
+    },
     // 新增标准
     addTemplate() {
       if (this.wbObj[this.dict]["_template"].length != 0) {
@@ -414,15 +738,22 @@ export default {
           this.exportExcel();
           break;
         case "sql":
-          this.$message({
-            message: "这要做嘛？",
-            type: "warning",
-          });
+          this.exportSQL();
           break;
         default:
       }
     },
-    // 调用后端生产 Excel
+    // 导出 sql
+    exportSQL() {
+      this.beforeExport();
+      if (this.dict) {
+        this, this.initSQLDialog();
+        this.sqlDialog = true;
+      } else {
+        this.$message.error("请先选择一个字典！");
+      }
+    },
+    // 调用后端生成 Excel
     exportExcel() {
       this.fullScreenLoading = this.$loading({
         lock: true,
@@ -643,6 +974,12 @@ export default {
     },
   },
   watch: {
+    sql: {
+      handler(val) {
+        this.refreshSQL();
+      },
+      deep: true,
+    },
     templateDialog(val, oldVal) {
       if (val) {
         this.clearCurRow();
