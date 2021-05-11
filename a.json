@@ -1,4 +1,4 @@
-export const wbObj = {
+{
     "性别": {
         "model": [
             {

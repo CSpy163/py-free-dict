@@ -7,6 +7,19 @@ Vue.use(ElementUI);
 
 Vue.config.productionTip = false
 
+// 全局 sql 模版
+Vue.prototype.$sqlTemplate = {
+  prefix: "",
+  suffix: "",
+  singlePattern: "",
+  singleFullPattern: "",
+  multiPattern: "",
+  multiFullPattern: "",
+}
+
+// 全局对比列下标
+Vue.prototype.$compareIndexMap = {}
+
 new Vue({
   render: h => h(App),
   components: {
