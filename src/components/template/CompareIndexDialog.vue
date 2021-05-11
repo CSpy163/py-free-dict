@@ -65,9 +65,7 @@ export default {
       this.compareIndexDialog = false;
     },
     bcRowLength(rows) {
-      console.log(rows);
       if (rows && rows.length != 0) {
-        console.log(rows[0]["cols"].length);
         return rows[0]["cols"].length;
       }
       return 0;

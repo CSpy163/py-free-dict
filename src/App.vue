@@ -1,4 +1,3 @@
-/* eslint-disable vue/no-unused-components */
 <template>
   <div id="app" :style="appStyle">
     <el-row v-show="!loaded">
@@ -158,7 +157,9 @@
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="excel">导出 Excel</el-dropdown-item>
-          <el-dropdown-item :disabled="!dict" command="sql">导出 SQL</el-dropdown-item>
+          <el-dropdown-item :disabled="!dict" command="sql"
+            >导出 SQL</el-dropdown-item
+          >
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -212,7 +213,6 @@ export default {
       dict: "",
       sheets: [],
       bcName: "",
-      area: "",
       bigColNames: [],
       bigColRows: [
         {
@@ -231,8 +231,6 @@ export default {
         cols: [],
         pRowId: "",
       },
-      dictMap: {},
-      compareDialog: false,
       compareResults: [
         {
           similar: 0,
@@ -240,34 +238,6 @@ export default {
           label: "",
         },
       ],
-
-      // templateDialog: false,
-      // templateRows: [],
-      // sqlDialog: false,
-      // sql: {
-      //   prefix: "",
-      //   suffix: "",
-      //   singlePattern: "",
-      //   multiPattern: "",
-      //   singleFullPattern: "",
-      //   multiFullPattern: "",
-      //   demoData: "a,b,c,d,e",
-      //   area: "",
-      //   temIndex: "",
-      //   areaIndex: "",
-      // },
-      // sqlTemList: [],
-      // resultSQL: "",
-      // templateSQLDialog: false,
-
-      // template: {
-      //   prefix: "",
-      //   suffix: "",
-      //   singlePattern: "'${item}'",
-      //   multiPattern: ",'${item}'",
-      //   singleFullPattern: "case ${singlePattern} then ${tem}",
-      //   multiFullPattern: "case in (${multiPatterns}) then ${tem}",
-      // },
     };
   },
   components: {
@@ -279,7 +249,6 @@ export default {
   computed: {
     bcColsMap() {
       if (this.dict) {
-        console.log(this.wbObj[this.dict]);
         return this.wbObj[this.dict];
       }
       return {};
@@ -297,51 +266,26 @@ export default {
       }
       return 0;
     },
-
-    // bigColLength() {
-    //   if (this.dict && this.sql.area && this.wbObj[this.dict][this.sql.area]) {
-    //     return this.wbObj[this.dict][this.sql.area].length != 0
-    //       ? this.wbObj[this.dict][this.sql.area][0]["cols"].length
-    //       : 0;
-    //   }
-    //   return 0;
-    // },
-    // dictDialogTitle() {
-    //   return `设置【${this.dict}】对比列`;
-    // },
-    // templateDialogTitle() {
-    //   return `标准 【${this.dict}】Dict`;
-    // },
-    // sqlDialogTitle() {
-    //   return `导出 【${this.dict}】SQL`;
-    // },
   },
   mounted() {
     window.ipcRenderer.on("file-loaded", (event, wbObj) => {
-    if (wbObj == null) {
-      this.$message.error("文件解析错误，请检查格式！");
+      if (wbObj == null) {
+        this.$message.error("文件解析错误，请检查格式！");
+        if (this.fullScreenLoading) {
+          this.fullScreenLoading.close();
+        }
+        return;
+      }
+      this.sheets.splice(0);
+      this.wbObj = wbObj;
+      this.setGlobalCompareIndexMap();
+      this.dict = "";
+
+      this.sheets.push(...Object.keys(this.wbObj));
+      this.loaded = true;
       if (this.fullScreenLoading) {
         this.fullScreenLoading.close();
       }
-      return;
-    }
-    this.sheets.splice(0);
-    this.wbObj = wbObj;
-    this.setGlobalCompareIndexMap();
-    // console.log(this.wbObj)
-    this.dict = "";
-
-    for (let key in this.wbObj) {
-      this.sheets.push(key);
-      this.$set(this.dictMap, key, {});
-      for (let bcName in this.wbObj[key]) {
-        this.$set(this.dictMap[key], bcName, 0);
-      }
-    }
-    this.loaded = true;
-    if (this.fullScreenLoading) {
-      this.fullScreenLoading.close();
-    }
     });
 
     window.ipcRenderer.on("export-excel-ended", (event, obj) => {
@@ -412,153 +356,9 @@ export default {
       }
       return "";
     },
-    // 将自定义的 sql 模版设置到 SQL 上
-    // applyTemplate() {
-    //   this.sql.prefix = this.template.prefix;
-    //   this.sql.suffix = this.template.suffix;
-    //   this.sql.singlePattern = this.template.singlePattern;
-    //   this.sql.multiPattern = this.template.multiPattern;
-    //   this.sql.singleFullPattern = this.template.singleFullPattern;
-    //   this.sql.multiFullPattern = this.template.multiFullPattern;
-    //   this.templateSQLDialog = false;
-    // },
-    // 初始化 SQL 导出面板
-    // initSQLDialog() {
-    //   this.sql.prefix = "";
-    //   this.sql.suffix = "";
-    //   this.sql.singlePattern = "";
-    //   this.sql.multiPattern = "";
-    //   this.sql.singleFullPattern = "";
-    //   this.sql.multiFullPattern = "";
-    //   this.sql.demoData = "a,b,c,d,e";
-    //   this.sql.area = "";
-    //   this.sql.temIndex = "";
-    //   this.sql.areaIndex = "";
-    // },
-    // 刷新 SQL
-    // refreshSQL() {
-    //   this.resultSQL = this.sql.prefix;
-    //   this.wbObj[this.dict]["_template"].forEach((tObj) => {
-    //     let areaObjs = tObj["matches"][this.sql.area];
-    //     if (areaObjs) {
-    //       console.log(areaObjs);
-    //       let sqlTemplate = this.getSQLTemplate(areaObjs.length);
-    //       console.log(sqlTemplate);
-    //       for (let i = 0; i < areaObjs.length; i++) {
-    //         let r = `\${item${i == 0 ? "" : i}}`;
-    //         sqlTemplate = ` ${sqlTemplate
-    //           .replace(r, areaObjs[i]["cols"][this.sql.areaIndex - 1])
-    //           .replace("${tem}", tObj["cols"][this.sql.temIndex - 1])} `;
-    //       }
-    //       this.resultSQL += sqlTemplate;
-    //     }
-    //   });
-    //   this.resultSQL += this.sql.suffix;
-    // },
-    // 获取 SQL 模版
-    // getSQLTemplate(length) {
-    //   switch (length) {
-    //     case 0:
-    //       return "";
-    //     case 1:
-    //       return `${this.sql.singleFullPattern}`.replace(
-    //         "${singlePattern}",
-    //         this.sql.singlePattern
-    //       );
-    //     default:
-    //       return `${this.sql.multiFullPattern}`.replace(
-    //         "${multiPatterns}",
-    //         this.multiPatterns
-    //       );
-    //   }
-    // },
-    // 新增标准
-    // addTemplate() {
-    //   if (this.wbObj[this.dict]["_template"].length != 0) {
-    //     // 构建正则表达式
-    //     let count = this.wbObj[this.dict]["_template"][0]["cols"].length - 1;
-    //     let regex = "^[^/]*";
-    //     for (let c = 0; c < count; c++) {
-    //       regex += "/[^/]*";
-    //     }
-    //     regex += "$";
 
-    //     this.$prompt(
-    //       `请输入新增标准，需包含${count}个“/”，建议添加前仔细核对。`,
-    //       "提示",
-    //       {
-    //         confirmButtonText: "确定",
-    //         cancelButtonText: "取消",
-    //         inputPattern: new RegExp(regex),
-    //         inputErrorMessage: `格式不正确，需包含${count}个“/”`,
-    //       }
-    //     ).then(({ value }) => {
-    //       let result = value.split("/");
-    //       let ids = this.wbObj[this.dict]["_template"].map(
-    //         (tObj) => tObj["rowId"]
-    //       );
-    //       // 默认行号为 2
-    //       let rowId = 2;
-    //       if (ids.length != 0) {
-    //         rowId = ids.sort((a, b) => parseInt(b) - parseInt(a))[0] + 1;
-    //       }
-    //       let obj = {
-    //         rowId: rowId,
-    //         cols: result,
-    //         matches: [],
-    //         belongs: {
-    //           rowId: "",
-    //           cols: [],
-    //         },
-    //       };
-
-    //       // 增加到 wbObj 中
-    //       this.wbObj[this.dict]["_template"].push(obj);
-    //       this.templateDialog = false;
-    //       this.$message({
-    //         message: "新增成功。",
-    //         type: "success",
-    //       });
-    //     });
-    //   } else {
-    //     this.$message.error("当前模版存在问题，请检查Excel。");
-    //   }
-    // },
     // 导出前汇总
     beforeExport(item) {
-      // 先遍历 wbObj 的 sheet
-      // for (let sheetName in this.wbObj) {
-      //   let sheetObj = this.wbObj[sheetName];
-      //   let templateObj = sheetObj["model"];
-      //   for (let bigCol in sheetObj) {
-      //     if (bigCol != "_template") {
-      //       let bigColObj = sheetObj[bigCol];
-      //       // 遍历 bigCol
-      //       bigColObj.forEach((bigColRow) => {
-      //         if (bigColRow["belongs"]) {
-      //           let belongRowId = bigColRow["belongs"]["rowId"];
-      //           if (belongRowId) {
-      //             let tObj = templateObj.find(
-      //               (to) => to["rowId"] == belongRowId
-      //             );
-      //             // 将已匹配的行塞到 template 的 matches 中
-      //             if (tObj) {
-      //               if (!tObj["matches"][bigCol]) tObj["matches"][bigCol] = [];
-      //               if (
-      //                 tObj["matches"][bigCol].findIndex(
-      //                   (mObj) => mObj["rowId"] == bigColRow["rowId"]
-      //                 ) == -1
-      //               ) {
-      //                 tObj["matches"][bigCol].push(bigColRow);
-      //               }
-      //             }
-      //           }
-      //         }
-      //       });
-      //     }
-      //   }
-      // }
-
       switch (item) {
         case "excel":
           this.exportExcel();
@@ -572,13 +372,6 @@ export default {
     // 导出 sql
     exportSQL() {
       this.showSqlDialog();
-      // this.beforeExport();
-      // if (this.dict) {
-      //   // this.initSQLDialog();
-      //   this.sqlDialog = true;
-      // } else {
-      //   this.$message.error("请先选择一个字典！");
-      // }
     },
     // 调用后端生成 Excel
     exportExcel() {
@@ -592,12 +385,6 @@ export default {
         window.ipcRenderer.invoke("export-excel", this.wbObj);
       }
     },
-    // 查看当前标准项
-    // showTemplate() {
-    //   this.templateRows.splice(0);
-    //   this.templateRows.push(...this.wbObj[this.dict]["_template"]);
-    //   this.templateDialog = true;
-    // },
     // 绑定 list
     bindList() {
       this.$confirm(
@@ -669,10 +456,6 @@ export default {
     bindToCur(row) {
       if (this.curRow["rowId"] != "") {
         this.curRow["pRowId"] = row["mRowId"];
-        // 填充右侧面板绑定（控制按钮显示）
-        // this.curRow["belongs"]["rowId"] = row["obj"]["rowId"];
-        // this.curRow["belongs"]["cols"].splice(0);
-        // this.curRow["belongs"]["cols"].push(...row["obj"]["cols"]);
         this.setListAndWbObj(this.curRow["rowId"], row);
       }
     },
@@ -684,17 +467,6 @@ export default {
         this.setListAndWbObj(this.curRow["rowId"]);
       }
     },
-    // 列对比设置弹窗
-    // setCompare() {
-    //   if (this.dict == "") {
-    //     this.$notify.error({
-    //       title: "错误",
-    //       message: "请先选择Dict！",
-    //     });
-    //     return;
-    //   }
-    //   this.compareDialog = true;
-    // },
     // 点击左侧列表中的值，设置到右侧面板中
     setRow(row) {
       // 复制普通属性
@@ -702,15 +474,6 @@ export default {
       this.curRow["cols"].splice(0);
       this.curRow["cols"].push(...row["cols"]);
       this.curRow["pRowId"] = row["pRowId"];
-      // 复制所属 row 属性
-      // this.curRow.belongs["rowId"] = row["belongs"]
-      //   ? row["belongs"]["rowId"]
-      //   : "";
-      // this.curRow.belongs.cols.splice(0);
-      // if (row["belongs"]) {
-      //   this.curRow.belongs.cols.push(...row["belongs"]["cols"]);
-      // }
-
       // 设置右侧搜索
       this.searchKey = row["cols"][this.autoCompareIndex];
     },
@@ -751,28 +514,6 @@ export default {
       });
       return tmpArray;
     },
-    // 对比相似度
-    // dictDiff(template, str) {
-    //   template = template + "";
-    //   if (!template) return 0;
-    //   if (!str || str.length == 0) return 0;
-    //   let hit = 0;
-    //   for (let i = 0; i < str.length; i++) {
-    //     let char = str.charAt(i);
-    //     let tIndex = template.indexOf(char);
-    //     if (tIndex != -1) {
-    //       hit++;
-    //       if (tIndex != template.length - 1) {
-    //         template =
-    //           template.substring(0, tIndex) +
-    //           template.substring(tIndex + 1, template.length);
-    //       } else {
-    //         template = template.substring(0, tIndex);
-    //       }
-    //     }
-    //   }
-    //   return hit / str.length;
-    // },
     // 清空右侧面板
     clearCurRow() {
       this.curRow["rowId"] = "";
@@ -811,17 +552,6 @@ export default {
     },
   },
   watch: {
-    // sql: {
-    //   handler(val) {
-    //     this.refreshSQL();
-    //   },
-    //   deep: true,
-    // },
-    // templateDialog(val, oldVal) {
-    //   if (val) {
-    //     this.clearCurRow();
-    //   }
-    // },
     dict(val, oldVal) {
       this.clearCurRow();
       this.bigColNames.splice(0);
@@ -859,12 +589,6 @@ export default {
       let tmpArray = this.getCompareResult(val);
       this.compareResults.push(...tmpArray);
     },
-  },
-  beforeDestroy() {
-    // console.log("destroy");
-    // if (window.ipcRenderer) {
-    //   window.ipcRenderer.remove("file-loaded");
-    // }
   },
 };
 </script>

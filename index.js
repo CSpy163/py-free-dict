@@ -5,19 +5,12 @@ const moment = require('moment')
 const {dialog} = require('electron')
 
 const {ipcMain} = require('electron')
-// import {
-//     readWbObjFrom,
-//     writeWbObjTo
-// } from './src/util/fd-xlsx'
-
 const {readWbObjFrom, writeWbObjTo} = require('./src/util/fd-xlsx')
 
 // 窗体对象
 let win = null
 // moment 时间组件设置时区
 moment.locale('zh-cn')
-
-
 
 function createWindow() {
     win = new BrowserWindow({

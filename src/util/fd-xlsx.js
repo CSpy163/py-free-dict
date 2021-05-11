@@ -1,37 +1,4 @@
 const xlsx = require('xlsx');
-const fs = require('fs');
-
-// 获取全新 wbObject
-// function getPureWbObject() {
-//     return {
-//         // compareIndexMap: {},
-//         // 获取 相似度
-// getSimilar: (template, val) => {
-//     if (template == null || val == null) return 0;
-//     template += ""
-//     val += ""
-
-//     let hit = 0;
-//     for (let i = 0; i < val.length; i++) {
-//         let char = val.charAt(i);
-//         let tIndex = template.indexOf(char);
-//         if (tIndex != -1) {
-//             hit++;
-//             if (tIndex != template.length - 1) {
-//                 template =
-//                     template.substring(0, tIndex) +
-//                     template.substring(tIndex + 1, template.length);
-//             } else {
-//                 template = template.substring(0, tIndex);
-//             }
-//         }
-//     }
-//     return hit / val.length;
-// },
-//         // 获取 dictNames 列表
-
-//     }
-// }
 
 /*
 分割 Excel 定位标识。
@@ -54,7 +21,6 @@ function pureEmpty(col) {
 function readWbObjFrom(filename) {
     // workbook 对象
     let wb = xlsx.readFile(filename);
-    // console.log(wb)
 
     // 用于前台操作的对象
     let wbObj = {};
@@ -88,10 +54,6 @@ function readWbObjFrom(filename) {
         for (let i = 0; i < headColCodes.length - 1; i++) {
             // 获取 sheet 特定位置的数值
             let bigColName = i == 0 ? 'model' : wbDictObj[`${String.fromCharCode(headColCodes[i])}1`]['v'];
-
-            // 设置各大列对比下标，默认为0
-            // wbObj.compareIndexMap[dict][bigColName] = 0;
-
             // 开始各大列插入值
             dictObj[bigColName] = [];
             // 逐行遍历
@@ -286,7 +248,6 @@ function bindInWbObj(wbObj, dict, bc, rowId, pRowId) {
                 // 设置 model 中列
                 if (!mRow['matches'].find(bcr => bcr['rowId'] === rowId && bcr['bcName'] === bc)) {
                     let mObj = {
-                        // similar: this.getSimilar(mRow['cols'][this['compareIndexMap'][dict]['model']], bcRow['cols'][this['compareIndexMap'][dict][bc]]),
                         bcName: bc,
                         rowId: rowId
                     }
@@ -325,16 +286,3 @@ module.exports.readWbObjFrom = readWbObjFrom;
 module.exports.writeWbObjTo = writeWbObjTo;
 module.exports.bindInWbObj = bindInWbObj;
 module.exports.getDictNames = getDictNames;
-
-// export {
-//     readWbObjFrom,
-//     writeWbObjTo
-// };
-
-
-// const {wbObj} = require('../mock/mockNew.js')
-// const wbObj = readWbObjFrom('/Users/cspy/Tmp/0511.xlsx')
-// let jsonStr = JSON.stringify(wbObj)
-// console.log(jsonStr)
-// fs.writeFileSync('a.json', jsonStr)
-// writeWbObjTo(wbObj, 'a.xlsx')
