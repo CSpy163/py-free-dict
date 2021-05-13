@@ -193,7 +193,6 @@
 </template>
 
 <script>
-const { wbObj } = require("./mock/mockData");
 const { bindInWbObj } = require("./util/fd-xlsx");
 import ModelDialog from "./components/template/ModelDialog";
 import CompareIndexDialog from "./components/template/CompareIndexDialog";
@@ -259,13 +258,7 @@ export default {
       }
       return [];
     },
-    // 自动获取当前 bc 的下标
-    autoCompareIndex() {
-      if (this.dict && this.bcName) {
-        return this.$compareIndexMap[this.dict][this.bcName];
-      }
-      return 0;
-    },
+    
   },
   mounted() {
     window.ipcRenderer.on("file-loaded", (event, wbObj) => {
@@ -304,6 +297,13 @@ export default {
     });
   },
   methods: {
+    // 自动获取当前 bc 的下标
+    autoCompareIndex() {
+      if (this.dict && this.bcName) {
+        return this.$compareIndexMap[this.dict][this.bcName];
+      }
+      return 0;
+    },
     // 保存 cols 到 model
     saveNewModels(newModelRow) {
       let rowIds = this.wbObj[this.dict]["model"].map((mRow) => mRow["rowId"]);
@@ -404,7 +404,7 @@ export default {
         .catch(() => {
           this.bigColRows.forEach((bcr) => {
             let tmpArray = this.getCompareResult(
-              bcr["cols"][this.autoCompareIndex]
+              bcr["cols"][this.autoCompareIndex()]
             );
             // 只设置最准确的
             if (
@@ -475,7 +475,7 @@ export default {
       this.curRow["cols"].push(...row["cols"]);
       this.curRow["pRowId"] = row["pRowId"];
       // 设置右侧搜索
-      this.searchKey = row["cols"][this.autoCompareIndex];
+      this.searchKey = row["cols"][this.autoCompareIndex()];
     },
     handleDrop(e) {
       e.preventDefault();

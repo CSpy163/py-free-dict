@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, Menu} = require('electron')
 const path = require('path')
 const mime = require('mime');
 const moment = require('moment')
@@ -9,6 +9,7 @@ const {readWbObjFrom, writeWbObjTo} = require('./src/util/fd-xlsx')
 
 // 窗体对象
 let win = null
+Menu.setApplicationMenu(null)
 // moment 时间组件设置时区
 moment.locale('zh-cn')
 
