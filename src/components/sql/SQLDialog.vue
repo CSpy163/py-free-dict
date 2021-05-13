@@ -90,7 +90,7 @@
         ></el-input
       ></el-col>
     </el-row>
-    <el-row>
+    <!-- <el-row>
       <el-col :span="6">模拟数据</el-col>
       <el-col :span="18"
         ><el-input
@@ -99,13 +99,13 @@
           placeholder="请输入模拟数据，“,” 分割"
         ></el-input
       ></el-col>
-    </el-row>
-    <el-row>
+    </el-row> -->
+    <!-- <el-row>
       <el-col :span="6">SQL 预览</el-col>
       <el-col :span="18"
         ><el-input type="textarea" disabled v-model="templateSQL"></el-input
       ></el-col>
-    </el-row>
+    </el-row> -->
     <el-row>
       <el-col :span="6">完整 SQL 预览</el-col>
       <el-col :span="18"
@@ -218,8 +218,22 @@ export default {
         default:
           return `${this.sql.multiFullPattern}`.replace(
             "${multiPatterns}",
-            this.sql.multiPatterns
+            this.multiPatterns(length)
           );
+      }
+    },
+    multiPatterns(length) {
+      if (length >= 1) {
+        let resultPattern = this.sql.singlePattern;
+        for (let i = 1; i < length; i++) {
+          resultPattern += this.sql.multiPattern.replace(
+            "${item}",
+            "${item" + i + "}"
+          );
+        }
+        return resultPattern;
+      } else {
+        return "";
       }
     },
   },
@@ -252,26 +266,13 @@ export default {
     sqlDialogTitle() {
       return `【${this.dictName}】 SQL 导出`;
     },
-    templateSQL() {
-      return this.getSQLTemplate(this.dt.length);
-    },
-    multiPatterns() {
-      if (this.dt.length > 1) {
-        let resultPattern = this.sql.singlePattern;
-        for (let i = 1; i < this.dt.length; i++) {
-          resultPattern += this.sql.multiPattern.replace(
-            "${item}",
-            "${item" + i + "}"
-          );
-        }
-        return resultPattern;
-      } else {
-        return "";
-      }
-    },
-    dt() {
-      return this.sql.demoData.split(",");
-    },
+    // templateSQL() {
+    //   return this.getSQLTemplate(this.dt.length);
+    // },
+    
+    // dt() {
+    //   return this.sql.demoData.split(",");
+    // },
     // temColLength() {
     //   return this.dict
     //     ? this.wbObj[this.dict]["model"].length != 0

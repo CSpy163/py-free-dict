@@ -315,6 +315,7 @@ export default {
         matches: [],
         pRowId: "",
       });
+      this.clearCurRow();
     },
     applyTemplate() {
       if (this.$refs["sqlDialog"]) {
@@ -339,6 +340,7 @@ export default {
     showCompareIndexDialog() {
       if (this.$refs["compareIndexDialog"]) {
         this.$refs["compareIndexDialog"].show();
+        this.clearCurRow();
       }
     },
     // 获取 curRow 映射的对象行

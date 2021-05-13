@@ -237,11 +237,28 @@ function bindInWbObj(wbObj, dict, bc, rowId, pRowId) {
     if (dict && wbObj[dict] && Array.isArray(wbObj[dict][bc]) && Array.isArray(wbObj[dict]['model'])) {
         // 大列 中的行
         const bcRow = wbObj[dict][bc].find(bcr => bcr['rowId'] == rowId);
+        if (bcRow && bcRow['pRowId']) {
+            if (bcRow['pRowId'] == pRowId) return true;
+
+            // 取消之前的绑定
+            bcRow['pRowId'] = "";
+            // 先找到之前的 mRow
+            const mRow = wbObj[dict]['model'].find(mr => mr['rowId'] == bcRow['pRowId']);
+            if (mRow) {
+                // 取消绑定
+                wbObj[dict]['model'].forEach(mRow => {
+                    let index = mRow['matches'].findIndex(mr => mr['bcName'] == bc && mr['rowId'] == rowId)
+                    if (index != -1) {
+                        mRow['matches'].splice(index, 1);
+                    }
+                })
+            }
+        }
 
         // model 中的行
         const mRow = wbObj[dict]['model'].find(mr => mr['rowId'] == pRowId);
         if (bcRow) {
-            // 如果有则绑定，没有则取消绑定
+            // 如果有则绑定
             if (mRow) {
                 // 设置 大列 中列
                 bcRow['pRowId'] = pRowId;
@@ -254,18 +271,7 @@ function bindInWbObj(wbObj, dict, bc, rowId, pRowId) {
                     mRow['matches'].push(mObj)
                 }
                 return true;
-            } else {
-                // 取消绑定
-                bcRow['pRowId'] = "";
-                wbObj[dict]['model'].forEach(mRow => {
-                    let index = mRow['matches'].findIndex(mr => mr['bcName'] == bc && mr['rowId'] == rowId)
-                    if (index != -1) {
-                        mRow['matches'].splice(index, 1);
-                    }
-                })
-                return true;
             }
-
         }
     }
     return false;
