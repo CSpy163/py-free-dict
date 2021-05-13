@@ -237,11 +237,7 @@ function bindInWbObj(wbObj, dict, bc, rowId, pRowId) {
     if (dict && wbObj[dict] && Array.isArray(wbObj[dict][bc]) && Array.isArray(wbObj[dict]['model'])) {
         // 大列 中的行
         const bcRow = wbObj[dict][bc].find(bcr => bcr['rowId'] == rowId);
-        if (bcRow && bcRow['pRowId']) {
-            if (bcRow['pRowId'] == pRowId) return true;
-
-            // 取消之前的绑定
-            bcRow['pRowId'] = "";
+        if (bcRow) {
             // 先找到之前的 mRow
             const mRow = wbObj[dict]['model'].find(mr => mr['rowId'] == bcRow['pRowId']);
             if (mRow) {
@@ -253,6 +249,8 @@ function bindInWbObj(wbObj, dict, bc, rowId, pRowId) {
                     }
                 })
             }
+            // 取消之前的绑定
+            bcRow['pRowId'] = "";
         }
 
         // model 中的行
